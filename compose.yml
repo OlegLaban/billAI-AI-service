@@ -1,0 +1,13 @@
+services:
+  ollama:
+    image: ollama/ollama:0.32.14-rc0
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+
+volumes:
+  ollama_data:
