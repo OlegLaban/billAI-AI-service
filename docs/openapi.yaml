@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: billAI AI Service
+  version: 1.0.0
+  description: HTTP API for sending prompts to an LLM and receiving generated answers.
+servers:
+  - url: http://localhost:8080
+    description: Local HTTP service
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: Service is running
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              example:
+                status: ok
+  /prompt:
+    post:
+      summary: Send prompt to LLM
+      operationId: sendPrompt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PromptRequest"
+            example:
+              prompt: Сколько планет в Солнечной системе?
+      responses:
+        "200":
+          description: LLM response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PromptResponse"
+              example:
+                answer: В Солнечной системе 8 планет.
+                model: mistral:7b
+        "400":
+          description: Invalid request body or empty prompt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidJson:
+                  value:
+                    error: invalid json body
+                emptyPrompt:
+                  value:
+                    error: prompt is required
+        "502":
+          description: LLM request failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: llm request failed
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: ok
+    PromptRequest:
+      type: object
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          description: Prompt text sent to the configured LLM.
+          example: Сколько планет в Солнечной системе?
+    PromptResponse:
+      type: object
+      required:
+        - answer
+        - model
+      properties:
+        answer:
+          type: string
+          description: Full generated answer from the LLM.
+          example: В Солнечной системе 8 планет.
+        model:
+          type: string
+          description: Ollama model used for generation.
+          example: mistral:7b
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: prompt is required

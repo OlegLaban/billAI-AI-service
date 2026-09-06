@@ -1,13 +1,29 @@
 services:
   ollama:
-    image: ollama/ollama:0.32.14-rc0
+    image: ollama/ollama:latest
     container_name: ollama
+    networks:
+      - app-net
     ports:
       - "11434:11434"
     volumes:
-      - ollama_data:/root/.ollama
+      - ollama:/root/.ollama
+    restart: unless-stopped
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:v5.17.14
+    container_name: swagger-ui
+    ports:
+      - "8081:8080"
     environment:
-      - OLLAMA_HOST=0.0.0.0:11434
+      SWAGGER_JSON: /openapi/openapi.yaml
+    volumes:
+      - ./docs/openapi.yaml:/openapi/openapi.yaml:ro
+    restart: unless-stopped
+
+networks:
+  app-net:
 
 volumes:
-  ollama_data:
+  ollama:
+
