@@ -9,4 +9,4 @@ up:
 	docker compose up -d
 
 pull:
-	docker exec -i ollama ollama pull qwen2.5-coder:1.5b
+	docker exec -i ollama ollama pull gemma3:1b
